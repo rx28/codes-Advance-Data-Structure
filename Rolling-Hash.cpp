@@ -1,39 +1,60 @@
-//Rabin karp
 #include <iostream>
 #include <string>
+#include <cmath>
 #include <vector>
+#include <string>
 #include <algorithm>
-#include<stack>
-#include <sstream>
-#include<unordered_map>
-#include<cmath>
 using namespace std;
 
-int main(){
-    string s="babaa";
-    string pat="baa";
-    int p=5381,d=26,win_size=3;
-    int hash_pat=0,pwr=0,hash_s=0;
-    for(int i=pat.size()-1;i>=0;i--){
-        hash_pat+=(pat[i]-'a'+1) * (static_cast<int>(pow(d,pwr++)));
-        hash_pat%=p;
-    }   
-    for(int i=0;i<s.size();i++){
-        if(i<win_size){
-          hash_s+=((s[i]-'a'+1)) * static_cast<int>(pow(d,win_size-i-1));
-          hash_s%=p;
-          if(hash_s==hash_pat){cout<<i; break;}
-        }
-        else{
-            hash_s-=(s[i-win_size]-'a'+1) * static_cast<int>(pow(d,win_size-1));
-            
-            hash_s*=d;
-            hash_s+=((s[i]-'a'+1)) ;
-            hash_s%=p;
+#define d 256
 
-            if(hash_s==hash_pat){cout<<"pattern found at "<<i-win_size; break;}
+void search(string pat, string txt, int q) {
+    int M = pat.length();
+    int N = txt.length();
+    int i, j;
+    
+    int p = 0; // hash value for pattern
+    int t = 0; // hash value for text
+    int h = 1;
+
+    for (i = 0; i < M - 1; i++)
+        h = (h * d) % q;
+
+    for (i = 0; i < M; i++) {
+        p = (d * p + pat[i]) % q;
+        t = (d * t + txt[i]) % q;
+    }
+
+    for (i = 0; i <= N - M; i++) {
+        if (p == t) {
+            for (j = 0; j < M; j++) {
+                if (txt[i + j] != pat[j])
+                    break;
+            }
+            if (j == M)
+                cout << "Pattern found at index " << i << endl;
+        }
+
+        if (i < N - M) {
+            t = (d * (t - txt[i] * h) + txt[i + M]) % q;
+            if (t < 0)
+                t = (t + q);
         }
     }
     
+}
+
+int main() {
+    string txt = "beaa";
+    string pat = "baa";
+    int q = 101; // A prime number
+    vector<string>v;
+    
+    v.push_back("fn");
+    v.push_back("g");
+    sort(v.begin(),v.end());
+    cout<<v[0];
+    // search(pat, txt, q);
+
     return 0;
 }
